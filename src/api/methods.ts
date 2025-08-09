@@ -35,6 +35,7 @@ import {
   Tarefa,
   DadosWrapper,
   AtividadeDoDia,
+  Estabelecimento
 } from '../types/models';
 // import { hasPermission, hasAnyRole } from './authUtils';
 
@@ -124,6 +125,53 @@ export const deleteStockEntry = async (id: string): Promise<void> => {
     await api.delete(`/entradaEstoque/${id}`);
   } catch (error) {
     throw new ApiError(`Falha ao deletar entrada de estoque com id ${id}`);
+  }
+};
+
+export const getAllEstablishments = async (): Promise<Estabelecimento[]> => {
+  try {
+    const response = await api.get('/estabelecimento');
+    return response.data;
+  } catch (error) {
+    throw new ApiError('Falha ao buscar estabelecimentos');
+  }
+};
+
+export const createEstablishment = async (data: Estabelecimento): Promise<Estabelecimento> => {
+  try {
+    const response = await api.post('/estabelecimento', data);
+    return response.data;
+  } catch (error) {
+    throw new ApiError('Falha ao criar estabelecimento');
+  }
+};
+
+export const updateEstablishment = async (
+  id: string,
+  data: Partial<Estabelecimento>,
+): Promise<Estabelecimento> => {
+  try {
+    const response = await api.put(`/estabelecimento/${id}`, data);
+    return response.data;
+  } catch (error) {
+    throw new ApiError(`Falha ao atualizar estabelecimento com id ${id}`);
+  }
+};
+
+export const deleteEstablishment = async (id: string): Promise<void> => {
+  try {
+    await api.delete(`/estabelecimento/${id}`);
+  } catch (error) {
+    throw new ApiError(`Falha ao deletar estabelecimento com id ${id}`);
+  }
+};
+
+export const getEstablishmentById = async (id: string): Promise<Estabelecimento> => {
+  try {
+    const response = await api.get(`/estabelecimento/${id}`);
+    return response.data;
+  } catch (error) {
+    throw new ApiError(`Falha ao buscar estabelecimento com id ${id}`);
   }
 };
 

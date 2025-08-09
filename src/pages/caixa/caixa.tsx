@@ -75,6 +75,7 @@ const Caixas: React.FC<CollapsedItemProps> = ({ open }) => {
     nomeCaixa: '',
     descricao: '',
     mac: '',
+    id_estabelecimento: '',
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [editId, setEditId] = useState<string | null>(null);
@@ -130,6 +131,7 @@ const Caixas: React.FC<CollapsedItemProps> = ({ open }) => {
       nomeCaixa: '',
       descricao: '',
       mac: '',
+      id_estabelecimento: '',
     });
     setErrors({});
     setEditId(null);
@@ -144,7 +146,7 @@ const Caixas: React.FC<CollapsedItemProps> = ({ open }) => {
     const newErrors: { [key: string]: string } = {};
     if (!form.nomeCaixa.trim()) newErrors.nomeCaixa = 'Nome do caixa é obrigatório';
     if (!form.mac.trim()) newErrors.mac = 'Endereço MAC é obrigatório';
-  
+    if (!form.id_estabelecimento.trim()) newErrors.id_estabelecimento = 'ID do Estabelecimento é obrigatório';
     // Validar formato do MAC
     const macRegex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
     if (form.mac.trim() && !macRegex.test(form.mac)) {
@@ -175,6 +177,7 @@ const Caixas: React.FC<CollapsedItemProps> = ({ open }) => {
       nomeCaixa: form.nomeCaixa,
       descricao: form.descricao || null,
       mac: form.mac, // Adicionado
+      id_estabelecimento: form.id_estabelecimento,
     };
   
     setLoading(true);
@@ -229,6 +232,7 @@ const Caixas: React.FC<CollapsedItemProps> = ({ open }) => {
         nomeCaixa: caixa.nomeCaixa,
         descricao: caixa.descricao || '',
         mac: caixa.mac || '', // Adicionado
+        id_estabelecimento: caixa.id_estabelecimento || '',
       });
       setEditId(caixaId);
       setOpenModal(true);
@@ -337,6 +341,19 @@ const Caixas: React.FC<CollapsedItemProps> = ({ open }) => {
     disabled={loading}
   />
 </Grid>
+<Grid item xs={12}>
+  <TextField
+    fullWidth
+    variant="filled"
+    name="id_estabelecimento"
+    label="ID do Estabelecimento"
+    value={form.id_estabelecimento}
+    onChange={handleChange}
+    error={Boolean(errors.id_estabelecimento)}
+    helperText={errors.id_estabelecimento}
+    disabled={loading}
+  />
+</Grid>
             </Grid>
 
             {errors.submit && (
@@ -385,54 +402,54 @@ const Caixas: React.FC<CollapsedItemProps> = ({ open }) => {
         <CardContent>
           <TableContainer component={Paper}>
             <Table>
-              <TableHead>
-                <TableRow>
-                  {['Nome do Caixa', 'Descrição', 'Ações'].map((header) => (
-                    <TableCell key={header} sx={{ fontWeight: 'bold' }}>
-                      {header}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {loading ? (
-                  <TableRow>
-                    <TableCell colSpan={5} align="center">
-                      Carregando...
-                    </TableCell>
-                  </TableRow>
-                ) : paginatedCaixas.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={5} align="center">
-                      Nenhum caixa encontrado
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  paginatedCaixas.map((item) => (
-                    <TableRow key={item.id}>
-                      <TableCell>{item.nomeCaixa}</TableCell>
-                      <TableCell>{item.descricao || '-'}</TableCell>
-
-                      <TableCell align="right">
-                        <IconButton
-                          color="primary"
-                          onClick={() => editarCaixa(item.id!)}
-                          disabled={loading}
-                        >
-                          <Edit />
-                        </IconButton>
-                        <IconButton
-                          color="error"
-                          onClick={() => handleOpenConfirmModal(item.id!)}
-                          disabled={loading}
-                        >
-                          <Delete />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
+            <TableHead>
+  <TableRow>
+    {['Nome do Caixa', 'Descrição', 'ID do Estabelecimento', 'Ações'].map((header) => (
+      <TableCell key={header} sx={{ fontWeight: 'bold' }}>
+        {header}
+      </TableCell>
+    ))}
+  </TableRow>
+</TableHead>
+<TableBody>
+  {loading ? (
+    <TableRow>
+      <TableCell colSpan={4} align="center">
+        Carregando...
+      </TableCell>
+    </TableRow>
+  ) : paginatedCaixas.length === 0 ? (
+    <TableRow>
+      <TableCell colSpan={4} align="center">
+        Nenhum caixa encontrado
+      </TableCell>
+    </TableRow>
+  ) : (
+    paginatedCaixas.map((item) => (
+      <TableRow key={item.id}>
+        <TableCell>{item.nomeCaixa}</TableCell>
+        <TableCell>{item.descricao || '-'}</TableCell>
+        <TableCell>{item.id_estabelecimento || '-'}</TableCell> {/* Add this line */}
+        <TableCell align="right">
+          <IconButton
+            color="primary"
+            onClick={() => editarCaixa(item.id!)}
+            disabled={loading}
+          >
+            <Edit />
+          </IconButton>
+          <IconButton
+            color="error"
+            onClick={() => handleOpenConfirmModal(item.id!)}
+            disabled={loading}
+          >
+            <Delete />
+          </IconButton>
+        </TableCell>
+      </TableRow>
+    ))
+  )}
+</TableBody>
             </Table>
           </TableContainer>
           <TablePagination

@@ -38,6 +38,7 @@ export interface Funcionario {
   isAdmin: boolean;
   id?: string;
   id_funcao: string;
+  id_estabelecimento: string;
   numeroBI: string;
   nomeFuncionario: string;
   senha: string;
@@ -45,12 +46,15 @@ export interface Funcionario {
   telefoneFuncionario: string;
   emailFuncionario: string;
   profilePic?: string;
+  estabelecimentos?: Estabelecimento;
 }
 
 export interface CategoriaProduto {
   id?: string;
   nomeCategoria: string;
   descricao?: string | null;
+  id_estabelecimento: string;
+  estabelecimentos?: Estabelecimento;
 }
 
 export interface Produto {
@@ -69,10 +73,12 @@ export interface Produto {
 export interface Fornecedor {
   id?: string;
   nif: string;
+  id_estabelecimento: string;
   nomeFornecedor: string;
   moradaFornecedor: string;
   telefoneFornecedor: number;
   emailFornecedor: string;
+  estabelecimentos?: Estabelecimento;
 }
 
 export interface DadosEntradaEstoque {
@@ -80,12 +86,14 @@ export interface DadosEntradaEstoque {
   id_fornecedor: string;
   id_produto: string;
   id_funcionario: string;
+  id_estabelecimento: string;
   quantidadeRecebida: number;
   dataEntrada: Date | string;
   adicionado: boolean;
   custoUnitario: number;
   lote: string;
   dataValidadeLote: Date;
+  estabelecimentos?: Estabelecimento;
 }
 
 export interface Caixa {
@@ -93,8 +101,10 @@ export interface Caixa {
   nomeCaixa: string;
   descricao?: string | null;
   mac: string;
+  id_estabelecimento: string;
   funcionariosCaixa?: FuncionarioCaixa[];
   alertas?: Alerta[];
+  estabelecimentos?: Estabelecimento;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -103,6 +113,7 @@ export interface Venda {
   id?: string;
   id_cliente: string;
   id_funcionarioCaixa: string;
+  id_estabelecimento: string;
   numeroDocumento: string;
   tipoDocumento: TipoDocumento;
   metodoPagamento: string;
@@ -112,6 +123,7 @@ export interface Venda {
   clientes?: Cliente;
   funcionariosCaixa?: FuncionarioCaixa;
   vendasProdutos?: VendaProduto[];
+  estabelecimentos?: Estabelecimento;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -120,16 +132,20 @@ export interface VendaProduto {
   id?: string;
   id_produto: string;
   id_venda: string;
+  id_estabelecimento: string;
   quantidadeVendida: number;
   produtos?: Produto;
   vendas?: Venda;
+  estabelecimentos?: Estabelecimento;
 }
 
 export interface Seccao {
   id?: string;
   nomeSeccao: string;
   descricao?: string | null;
+  id_estabelecimento: string;
   produtosLocalizacoes?: ProdutoLocalizacao[];
+  estabelecimentos?: Estabelecimento;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -138,7 +154,9 @@ export interface Corredor {
   id?: string;
   nomeCorredor: string;
   descricao?: string | null;
+  id_estabelecimento: string;
   produtosLocalizacoes?: ProdutoLocalizacao[];
+  estabelecimentos?: Estabelecimento;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -147,10 +165,13 @@ export interface Prateleira {
   id?: string;
   nomePrateleira: string;
   descricao?: string | null;
+  id_estabelecimento: string;
   produtosLocalizacoes?: ProdutoLocalizacao[];
+  estabelecimentos?: Estabelecimento;
   createdAt?: string;
   updatedAt?: string;
 }
+
 export enum tipo {
   Armazem = 'Armazem',
   Loja = 'Loja',
@@ -161,7 +182,9 @@ export interface Localizacao {
   nomeLocalizacao: string;
   descricao?: string | null;
   tipo: tipo;
+  id_estabelecimento: string;
   produtosLocalizacoes?: ProdutoLocalizacao[];
+  estabelecimentos?: Estabelecimento;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -169,8 +192,9 @@ export interface Localizacao {
 export interface AlertState {
   severity: 'success' | 'error' | 'info' | 'warning';
   message: string;
-  unread?: boolean; // Propriedade para indicar se o alerta não foi lido
+  unread?: boolean;
 }
+
 export interface ProdutoLocalizacao {
   id?: string;
   id_produto: string;
@@ -178,6 +202,7 @@ export interface ProdutoLocalizacao {
   id_seccao: string;
   id_prateleira: string;
   id_corredor: string;
+  id_estabelecimento: string;
   lote?: string;
   dataValidadeLote?: Date;
   quantidadeProduto: number;
@@ -188,6 +213,7 @@ export interface ProdutoLocalizacao {
   seccoes?: Seccao;
   prateleiras?: Prateleira;
   corredores?: Corredor;
+  estabelecimentos?: Estabelecimento;
   createdAt?: string;
   updatedAt?: string;
   id_estoque?: string;
@@ -198,11 +224,13 @@ export interface Transferencia {
   id_produto: string;
   id_funcionario: string;
   id_produtoLocalizacao?: string;
+  id_estabelecimento: string;
   dataTransferencia: Date;
   quantidadeTransferida: number;
   funcionarios?: Funcionario;
   produtos?: Produto;
   produtosLocalizacoes?: ProdutoLocalizacao;
+  estabelecimentos?: Estabelecimento;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -211,6 +239,7 @@ export interface FuncionarioCaixa {
   id?: string;
   id_caixa: string;
   id_funcionario: string;
+  id_estabelecimento: string;
   estadoCaixa: boolean;
   quantidadaFaturada: number;
   horarioAbertura: Date;
@@ -219,6 +248,7 @@ export interface FuncionarioCaixa {
   Funcionarios?: Funcionario;
   vendas?: Venda[];
   fornecedores?: Fornecedor[];
+  estabelecimentos?: Estabelecimento;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -226,10 +256,12 @@ export interface FuncionarioCaixa {
 export interface DadosEstoque {
   id?: string;
   id_produto: string;
+  id_estabelecimento: string;
   quantidadeAtual: number;
   lote: string;
   dataValidadeLote: Date;
   produtos?: Produto;
+  estabelecimentos?: Estabelecimento;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -238,10 +270,12 @@ export interface Alerta {
   id?: string;
   id_caixa: string;
   id_produto: string;
+  id_estabelecimento: string;
   nomeAlerta: string;
   descricao?: string | null;
   caixas?: Caixa;
   produtos?: Produto;
+  estabelecimentos?: Estabelecimento;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -377,10 +411,13 @@ export interface PeriodoMaisVendidoPorProduto {
   quantidadeVendida: number;
   valorTotal: number;
 }
+
 export interface Tarefa {
   id?: string;
   nome: string;
   descricao: string;
+  id_estabelecimento: string;
+  estabelecimentos?: Estabelecimento;
 }
 
 export interface AtividadeDoDia {
@@ -389,7 +426,36 @@ export interface AtividadeDoDia {
   id?: string;
   id_funcionario: string;
   id_tarefa: string;
+  id_estabelecimento: string;
   status: 'Concluída' | 'Em Andamento' | 'Pendente';
   createdAt?: Date;
   createdBy?: string;
+  estabelecimentos?: Estabelecimento;
+}
+
+export interface Estabelecimento {
+  id?: string;
+  nome: string;
+  endereco: string;
+  telefone: string;
+  email: string;
+  funcionarios?: Funcionario[];
+  tarefas?: Tarefa[];
+  funcionariosTarefas?: AtividadeDoDia[];
+  estoques?: DadosEstoque[];
+  fornecedores?: Fornecedor[];
+  entradasEstoque?: DadosEntradaEstoque[];
+  caixas?: Caixa[];
+  vendas?: Venda[];
+  vendasProdutos?: VendaProduto[];
+  seccoes?: Seccao[];
+  corredores?: Corredor[];
+  prateleiras?: Prateleira[];
+  localizacoes?: Localizacao[];
+  produtosLocalizacoes?: ProdutoLocalizacao[];
+  transferencias?: Transferencia[];
+  funcionariosCaixa?: FuncionarioCaixa[];
+  alertas?: Alerta[];
+  createdAt?: string;
+  updatedAt?: string;
 }

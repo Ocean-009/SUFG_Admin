@@ -75,6 +75,7 @@ const Categoria: React.FC<CollapsedItemProps> = ({ open }) => {
   const [categoriaToDelete, setCategoriaToDelete] = useState<string | null>(null);
   const [editCategoriaId, setEditCategoriaId] = useState<string | null>(null);
   const [nomeCategoria, setNomeCategoria] = useState('');
+  const [id_estabelecimento, setId_estabelecimento] = useState('');
   const [descricao, setDescricao] = useState('');
   const [categorias, setCategorias] = useState<CategoriaProduto[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -138,7 +139,7 @@ const Categoria: React.FC<CollapsedItemProps> = ({ open }) => {
   const handleAddCategoria = async () => {
     try {
       setLoading(true);
-      const categoriaData = { nomeCategoria: nomeCategoria, descricao: descricao };
+      const categoriaData = { nomeCategoria: nomeCategoria, descricao: descricao, id_estabelecimento: id_estabelecimento};
       if (editCategoriaId) {
         await updateProductCategory(editCategoriaId, categoriaData);
       } else {

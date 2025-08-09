@@ -32,6 +32,7 @@ export default {
   tarefa: `/${rootPaths.pagesRoot}/tarefa`,
   configuracoes: `/${rootPaths.pagesRoot}/configuracoes`,
   logout: `/${rootPaths.pagesRoot}/logout`,
+  estabelecimento: `/${rootPaths.pagesRoot}/estabelecimento`,
 
   // Páginas de erro
   notFound: `/${rootPaths.errorRoot}/404`,

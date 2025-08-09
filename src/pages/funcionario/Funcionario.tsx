@@ -30,13 +30,14 @@ import IconifyIcon from 'components/base/IconifyIcon';
 import Delete from 'components/icons/factor/Delete';
 import Edit from 'components/icons/factor/Edit';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Funcionario, Funcao } from 'types/models';
+import { Funcionario, Funcao, Estabelecimento } from 'types/models';
 import {
   getAllEmployees,
   createEmployee,
   updateEmployee,
   deleteEmployee,
   getAllFunctions,
+  getAllEstablishments,
 } from '../../api/methods';
 import { getUserData, hasPermission } from '../../api/authUtils';
 import { useNavigate } from 'react-router-dom';
@@ -93,14 +94,18 @@ const FuncionarioComponent: React.FC<CollapsedItemProps> = ({ open }) => {
   const [editId, setEditId] = useState<string | null>(null);
   const [deleteFuncionarioId, setDeleteFuncionarioId] = useState<string | null>(null);
   const [form, setForm] = useState<Omit<Funcionario, 'id'>>({
+    role: '',
+    isAdmin: false,
     id_funcao: '',
     numeroBI: '',
     nomeFuncionario: '',
+    id_estabelecimento: '',
     senha: '',
     moradaFuncionario: '',
     telefoneFuncionario: '',
     emailFuncionario: '',
   });
+  const [estabelecimentos, setEstabelecimentos] = useState<Estabelecimento[]>([]);
   const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);
   const [funcoes, setFuncoes] = useState<Funcao[]>([]);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -166,15 +171,17 @@ const FuncionarioComponent: React.FC<CollapsedItemProps> = ({ open }) => {
             setTimeout(() => reject(new Error('Tempo limite excedido')), time),
           ),
         ]);
-      const [employeesData, functionsData] = await Promise.all([
+      const [employeesData, functionsData, EstablishmentsData] = await Promise.all([
         timeoutPromise(getAllEmployees(), 10000),
         timeoutPromise(getAllFunctions(), 10000),
+        timeoutPromise(getAllEstablishments(), 10000),
       ]);
       if (!Array.isArray(employeesData) || !Array.isArray(functionsData)) {
         throw new Error('A resposta da API não é um array');
       }
       setFuncionarios(employeesData ?? []);
       setFuncoes(functionsData ?? []);
+      setEstabelecimentos(EstablishmentsData ?? []);
       setPage(0);
       log('Dados carregados:', { employees: employeesData, functions: functionsData });
     } catch (error: any) {
@@ -222,8 +229,11 @@ const FuncionarioComponent: React.FC<CollapsedItemProps> = ({ open }) => {
     setEditId(null);
     setForm({
       id_funcao: '',
+      role: '',
+      isAdmin: false,
       numeroBI: '',
       nomeFuncionario: '',
+      id_estabelecimento: '',
       senha: '',
       moradaFuncionario: '',
       telefoneFuncionario: '',
@@ -238,9 +248,12 @@ const FuncionarioComponent: React.FC<CollapsedItemProps> = ({ open }) => {
     setIsEditing(false);
     setEditId(null);
     setForm({
+      role: '',
+      isAdmin: false,
       id_funcao: '',
       numeroBI: '',
       nomeFuncionario: '',
+      id_estabelecimento: '',
       senha: '',
       moradaFuncionario: '',
       telefoneFuncionario: '',
@@ -304,6 +317,7 @@ const FuncionarioComponent: React.FC<CollapsedItemProps> = ({ open }) => {
     if (!form.telefoneFuncionario?.trim()) newErrors.telefoneFuncionario = 'Telefone é obrigatório';
     if (!form.numeroBI?.trim()) newErrors.numeroBI = 'NIF/BI é obrigatório';
     if (!form.id_funcao) newErrors.id_funcao = 'Função é obrigatória';
+    if (!form.id_estabelecimento) newErrors.id_estabelecimento = 'Estabelecimento é obrigatório';
     if (!isEditing && !form.senha?.trim()) newErrors.senha = 'Senha é obrigatória';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -334,10 +348,13 @@ const FuncionarioComponent: React.FC<CollapsedItemProps> = ({ open }) => {
         id_funcao: form.id_funcao,
         numeroBI: form.numeroBI,
         nomeFuncionario: form.nomeFuncionario,
+        id_estabelecimento: form.id_estabelecimento,
         senha: form.senha || '',
         moradaFuncionario: form.moradaFuncionario || '',
         telefoneFuncionario: form.telefoneFuncionario,
         emailFuncionario: form.emailFuncionario || '',
+        role: '',
+        isAdmin: false
       };
       if (isEditing && editId) {
         const updatedEmployee = await updateEmployee(editId, employeeData);
@@ -386,6 +403,7 @@ const FuncionarioComponent: React.FC<CollapsedItemProps> = ({ open }) => {
       setAlert({ severity: 'error', message: 'ID do funcionário não fornecido' });
       return;
     }
+    let employeeToDelete;
     try {
       setLoadingDelete(true);
       setAlert(null);
@@ -455,6 +473,9 @@ const FuncionarioComponent: React.FC<CollapsedItemProps> = ({ open }) => {
       setIsEditing(true);
       setEditId(funcionario.id);
       setForm({
+        role: funcionario.role,
+        isAdmin: funcionario.isAdmin,
+        id_estabelecimento: funcionario.id_estabelecimento,
         id_funcao: funcionario.id_funcao,
         numeroBI: funcionario.numeroBI || '',
         nomeFuncionario: funcionario.nomeFuncionario || '',
@@ -700,6 +721,44 @@ const FuncionarioComponent: React.FC<CollapsedItemProps> = ({ open }) => {
                 )}
               </FormControl>
             </Grid>
+            <Grid item xs={12} sm={6}>
+  <FormControl
+    variant="filled"
+    fullWidth
+    error={!!errors.id_estabelecimento}
+    disabled={loadingSave || (isEditing ? !permissions.canUpdate : !permissions.canCreate)}
+  >
+    <InputLabel>Estabelecimento</InputLabel>
+    <Select
+      name="id_estabelecimento"
+      value={form.id_estabelecimento}
+      onChange={handleSelectChange}
+      title={
+        isEditing
+          ? !permissions.canUpdate
+            ? 'Você não tem permissão para atualizar funcionários'
+            : ''
+          : !permissions.canCreate
+            ? 'Você não tem permissão para criar funcionários'
+            : ''
+      }
+    >
+      <MenuItem value="">
+        <em>Selecione um estabelecimento</em>
+      </MenuItem>
+      {estabelecimentos.map((estabelecimento) => (
+        <MenuItem key={estabelecimento.id} value={estabelecimento.id}>
+          {estabelecimento.nome}
+        </MenuItem>
+      ))}
+    </Select>
+    {errors.id_estabelecimento && (
+      <Typography color="error" variant="caption">
+        {errors.id_estabelecimento}
+      </Typography>
+    )}
+  </FormControl>
+</Grid>
             {!isEditing && (
               <Grid item xs={12}>
                 <TextField

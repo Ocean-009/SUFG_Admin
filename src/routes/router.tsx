@@ -11,6 +11,7 @@ import Faturacao from 'pages/faturacao/Faturacao';
 import Relatorio from 'pages/relatorio/Relatorio';
 import Loja from 'pages/produt';
 import Corredor from 'pages/corredor/Corredor';
+import Estabelecimento from 'pages/estabelecimento/Estabelecimento';
 import Prateleira from 'pages/prateleira/Prateleira';
 import LocalProduto from 'pages/produt/ProdutoLocalizacao';
 import Tarefa from 'pages/tarefa/tarefa';
@@ -83,6 +84,14 @@ export const routes = [
               {
                 path: paths.tarefa,
                 element: <Tarefa />,
+              },
+              {
+                path: paths.estabelecimento,
+                element: (
+                  <ProtectedRoute requiredRoles={['Admin']} redirectTo={paths.perfil}>
+                    <Estabelecimento open={true} />
+                  </ProtectedRoute>
+                ),
               },
               {
                 path: paths.perfil,

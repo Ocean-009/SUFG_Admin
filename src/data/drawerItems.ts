@@ -4,6 +4,7 @@ import Grid from 'components/icons/drawer/Grid';
 import ShoppingBag from 'components/icons/drawer/ShoppingBag';
 import ShoppingCart from 'components/icons/drawer/ShoppingCart';
 import Car from 'components/icons/drawer/Car';
+import Store from 'components/icons/drawer/Store';
 import paths, { rootPaths } from 'routes/paths';
 import { SvgIconProps } from '@mui/material';
 
@@ -146,7 +147,7 @@ export const drawerItems: DrawerItem[] = [
     requiredRoles: ['Admin', 'Gerente'],
   },
   {
-    id: 5,
+    id: 7,
     icon: Car,
     title: 'Usuários',
     collapsible: true,
@@ -177,12 +178,21 @@ export const drawerItems: DrawerItem[] = [
     ],
   },
   {
-    id: 6,
+    id: 8,
     icon: ShoppingCart,
     title: 'Tarefa',
     path: `/${rootPaths.pagesRoot}/tarefa`,
     collapsible: false,
     active: true,
     requiredRoles: ['Admin', 'Gerente', 'Estoquista'],
+  },
+  {
+    id: 10,
+    icon: Store,
+    title: 'Gestão de Estabelecimento',
+    path: `/${rootPaths.pagesRoot}/estabelecimento`,
+    collapsible: false,
+    active: true,
+    requiredRoles: ['Admin'],
   },
 ];
