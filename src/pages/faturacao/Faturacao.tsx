@@ -337,6 +337,10 @@ const Faturacao: React.FC = () => {
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [loading, setLoading] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false);
+  const [openPasswordModal, setOpenPasswordModal] = useState(false);
+  const [password, setPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [produtoIndexToRemove, setProdutoIndexToRemove] = useState<number | null>(null);
   const [alert, setAlert] = useState<{
     severity: 'success' | 'error' | 'info' | 'warning';
     message: string;
@@ -695,13 +699,40 @@ const Faturacao: React.FC = () => {
       return acc + precoVenda * curr.quantidade;
     }, 0);
   };
-
   
+  const validatePassword = async (inputPassword: string): Promise<boolean> => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setPasswordError('Nenhum token encontrado. Faça login novamente.');
+      return false;
+    }
 
+    const response = await axios.post(
+      'http://localhost:3333/auth/validate-password',
+      { password: inputPassword },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
 
-
+    const { role } = response.data;
+    if (role === 'Admin' || role === 'Gerente') {
+      return true;
+    } else {
+      setPasswordError('Apenas usuários com cargo de Admin ou Gerente podem remover produtos.');
+      return false;
+    }
+  } catch (error: any) {
+    setPasswordError(
+      error.response?.data?.message || 'Erro ao validar a senha. Tente novamente.',
+    );
+    return false;
+  }
+};
   
-
 const generatePDF = (fatura: Fatura) => {
   try {
     const doc = new jsPDF({
@@ -978,8 +1009,46 @@ const generatePDF = (fatura: Fatura) => {
   };
 
   const removerProdutoInput = (index: number) => {
+  if (!loggedInFuncionarioId) {
+    setAlert({ severity: 'error', message: 'Usuário não autenticado. Faça login novamente.' });
+    navigate('/login');
+    return;
+  }
+
+  // Verificar o cargo do usuário logado
+  if (loggedInFuncionarioCargo !== 'Admin' && loggedInFuncionarioCargo !== 'Gerente') {
+    setProdutoIndexToRemove(index);
+    setOpenPasswordModal(true);
+  } else {
     dispatchFatura({ type: 'REMOVE_PRODUTO', index });
-  };
+  }
+};
+
+const handlePasswordSubmit = async () => {
+  if (!password) {
+    setPasswordError('Digite uma senha.');
+    return;
+  }
+
+  setLoading(true);
+  const isValid = await validatePassword(password);
+  setLoading(false);
+
+  if (isValid && produtoIndexToRemove !== null) {
+    dispatchFatura({ type: 'REMOVE_PRODUTO', index: produtoIndexToRemove });
+    setOpenPasswordModal(false);
+    setPassword('');
+    setPasswordError('');
+    setProdutoIndexToRemove(null);
+  }
+};
+
+const handlePasswordModalClose = () => {
+  setOpenPasswordModal(false);
+  setPassword('');
+  setPasswordError('');
+  setProdutoIndexToRemove(null);
+};
 
   const handleClientSelect = (_event: React.SyntheticEvent, newValue: string | Cliente | null) => {
     if (newValue) {
@@ -2447,6 +2516,48 @@ useEffect(() => {
           </Stack>
         </Box>
       </Modal>
+      <Modal open={openPasswordModal} onClose={handlePasswordModalClose}>
+  <Box sx={confirmModalStyle}>
+    <Typography variant="h6" gutterBottom>
+      Autenticação Necessária
+    </Typography>
+    <Typography variant="body1" mb={3}>
+      Insira a senha de um usuário com cargo de Admin ou Gerente para remover o produto.
+    </Typography>
+    <TextField
+      fullWidth
+      variant="outlined"
+      label="Senha"
+      type="password"
+      value={password}
+      onChange={(e) => {
+        setPassword(e.target.value);
+        setPasswordError('');
+      }}
+      error={Boolean(passwordError)}
+      helperText={passwordError}
+      sx={{ mb: 3 }}
+    />
+    <Stack direction="row" spacing={2} justifyContent="flex-end">
+      <Button
+        variant="outlined"
+        color="secondary"
+        onClick={handlePasswordModalClose}
+        disabled={loading}
+      >
+        Cancelar
+      </Button>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handlePasswordSubmit}
+        disabled={loading}
+      >
+        {loading ? 'Validando...' : 'Confirmar'}
+      </Button>
+    </Stack>
+  </Box>
+</Modal>
 
       <Card sx={{ mt: 2, borderRadius: 2 }}>
         <CardContent sx={{ p: { xs: 1, sm: 2 } }}>

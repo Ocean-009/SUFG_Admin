@@ -759,26 +759,30 @@ const FuncionarioComponent: React.FC<CollapsedItemProps> = ({ open }) => {
     )}
   </FormControl>
 </Grid>
-            {!isEditing && (
-              <Grid item xs={12}>
-                <TextField
-                  name="senha"
-                  label="Senha"
-                  type="password"
-                  variant="filled"
-                  fullWidth
-                  value={form.senha}
-                  onChange={handleInputChange}
-                  error={!!errors.senha}
-                  helperText={errors.senha}
-                  disabled={loadingSave || !permissions.canCreate}
-                  required
-                  title={
-                    !permissions.canCreate ? 'Você não tem permissão para criar funcionários' : ''
-                  }
-                />
-              </Grid>
-            )}
+            <Grid item xs={12}>
+  <TextField
+    name="senha"
+    label="Senha"
+    type="password"
+    variant="filled"
+    fullWidth
+    value={form.senha}
+    onChange={handleInputChange}
+    error={!!errors.senha}
+    helperText={errors.senha}
+    disabled={loadingSave || (isEditing ? !permissions.canUpdate : !permissions.canCreate)}
+    required={!isEditing}
+    title={
+      isEditing
+        ? !permissions.canUpdate
+          ? 'Você não tem permissão para atualizar funcionários'
+          : ''
+        : !permissions.canCreate
+          ? 'Você não tem permissão para criar funcionários'
+          : ''
+    }
+  />
+</Grid>
             <Grid item xs={12}>
               <Button
                 variant="contained"
