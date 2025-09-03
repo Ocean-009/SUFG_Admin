@@ -31,6 +31,7 @@ const Armazem = lazy(() => import('pages/localizacao/Localizacao'));
 const Login = lazy(() => import('pages/authentication/Login'));
 const Signup = lazy(() => import('pages/authentication/Signup'));
 const ErrorPage = lazy(() => import('pages/errors/ErrorPage'));
+const LogPanel = lazy(() => import('pages/log/Log')); // Importação confirmada
 
 export const routes = [
   {
@@ -74,16 +75,28 @@ export const routes = [
             ),
             children: [
               {
+                path: paths.caixa,
+                element: <Caixas open={true} />,
+              },
+              {
+                path: paths.categorias,
+                element: <Categoria open={true} />,
+              },
+              {
+                path: paths.cliente,
+                element: <Cliente open={true} />,
+              },
+              {
+                path: paths.corredor,
+                element: <Corredor open={true} />,
+              },
+              {
                 path: paths.dashboard,
                 element: (
                   <ProtectedRoute requiredRoles={['Admin', 'Gerente']} redirectTo={paths.perfil}>
                     <Dashboard />
                   </ProtectedRoute>
                 ),
-              },
-              {
-                path: paths.tarefa,
-                element: <Tarefa />,
               },
               {
                 path: paths.estabelecimento,
@@ -94,64 +107,60 @@ export const routes = [
                 ),
               },
               {
-                path: paths.perfil,
-                element: <Perfil />,
-              },
-              {
-                path: paths.loja,
-                element: <Loja open={true} />,
-              },
-              {
-                path: paths.localizacao,
-                element: <Armazem open={true} />,
-              },
-              {
-                path: paths.categorias,
-                element: <Categoria open={true} />,
-              },
-              {
-                path: paths.caixa,
-                element: <Caixas open={true} />,
-              },
-              {
-                path: paths.estoque,
-                element: <Stock />,
-              },
-              {
-                path: paths.corredor,
-                element: <Corredor open={true} />,
-              },
-              {
-                path: paths.prateleira,
-                element: <Prateleira open={true} />,
-              },
-              {
-                path: paths.seccao,
-                element: <Secao open={true} />,
+                path: paths.faturacao,
+                element: <Faturacao />,
               },
               {
                 path: paths.funcionarios,
                 element: <Funcionario open={true} />,
               },
               {
-                path: paths.vendas,
-                element: <Fornecedor open={true} />,
+                path: paths.localizacao,
+                element: <Armazem open={true} />,
               },
               {
                 path: paths.localProduto,
                 element: <LocalProduto open={true} />,
               },
               {
+                path: paths.logs,
+                element: (
+                  <ProtectedRoute requiredRoles={['Admin', 'Gerente']} redirectTo={paths.perfil}>
+                    <LogPanel open={true} />
+                  </ProtectedRoute>
+                ),
+              },
+              {
+                path: paths.perfil,
+                element: <Perfil />,
+              },
+              {
+                path: paths.prateleira,
+                element: <Prateleira open={true} />,
+              },
+              {
                 path: paths.relatorio,
                 element: <Relatorio />,
               },
               {
-                path: paths.cliente,
-                element: <Cliente open={true} />,
+                path: paths.seccao,
+                element: <Secao open={true} />,
               },
               {
-                path: paths.faturacao,
-                element: <Faturacao />,
+                path: paths.estoque,
+                element: <Stock />,
+              },
+              {
+                path: paths.tarefa,
+                element: <Tarefa />,
+              },
+              {
+                path: paths.vendas,
+                element: <Fornecedor open={true} />,
+              },
+              {
+                path: paths.loja,
+                element: <Loja open={true} />,
               },
             ],
           },

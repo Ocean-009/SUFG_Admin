@@ -195,4 +195,13 @@ export const drawerItems: DrawerItem[] = [
     active: true,
     requiredRoles: ['Admin'],
   },
+  {
+    id: 11,
+    icon: Store, // Substitua por um ícone apropriado, se disponível
+    title: 'Logs do Sistema',
+    path: paths.logs,
+    collapsible: false,
+    active: true,
+    requiredRoles: ['Admin', 'Gerente'],
+  },
 ];

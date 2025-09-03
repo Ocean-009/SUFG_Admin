@@ -35,7 +35,10 @@ import {
   Tarefa,
   DadosWrapper,
   AtividadeDoDia,
-  Estabelecimento
+  Estabelecimento,
+  Log,
+  AcaoLog,
+  EntidadeLog
 } from '../types/models';
 // import { hasPermission, hasAnyRole } from './authUtils';
 
@@ -44,6 +47,13 @@ export class ApiError extends Error {
     super(message);
     this.name = 'ApiError';
   }
+}
+export interface LogFilter {
+  entidade?: EntidadeLog;
+  acao?: AcaoLog;
+  id_funcionario?: string;
+  startDate?: string; // ISO string (e.g., "2025-09-02T00:00:00Z")
+  endDate?: string; // ISO string
 }
 export class AppError {
   public readonly message: string;
@@ -1192,3 +1202,60 @@ export const getSalesByPeriod = async (
     throw new ApiError('Falha ao buscar faturamento por período');
   }
 };
+
+// Buscar todos os logs
+     export const getAllLogs = async (): Promise<Log[]> => {
+       try {
+         const response = await api.get('/log'); // Alterado de /logs para /log
+         return response.data;
+       } catch (error) {
+         throw new ApiError('Falha ao buscar logs');
+       }
+     };
+
+     // Buscar log por ID
+     export const getLogById = async (id: string): Promise<Log> => {
+       try {
+         const response = await api.get(`/log/${id}`); // Alterado de /logs para /log
+         return response.data;
+       } catch (error) {
+         throw new ApiError(`Falha ao buscar log com id ${id}`);
+       }
+     };
+
+     // Filtrar logs por critérios
+     export const filterLogs = async (filter: LogFilter): Promise<Log[]> => {
+       try {
+         const queryParams = new URLSearchParams();
+         if (filter.entidade) queryParams.append('entidade', filter.entidade);
+         if (filter.acao) queryParams.append('acao', filter.acao);
+         if (filter.id_funcionario) queryParams.append('id_funcionario', filter.id_funcionario);
+         if (filter.startDate) queryParams.append('startDate', filter.startDate);
+         if (filter.endDate) queryParams.append('endDate', filter.endDate);
+
+         const response = await api.get(`/log/filtrar?${queryParams.toString()}`); // Alterado de /logs para /log
+         return response.data;
+       } catch (error) {
+         throw new ApiError('Falha ao filtrar logs');
+       }
+     };
+
+     // Buscar logs por entidade
+     export const getLogsByEntity = async (entidade: EntidadeLog): Promise<Log[]> => {
+       try {
+         const response = await api.get(`/log/entidade/${entidade}`); // Alterado de /logs para /log
+         return response.data;
+       } catch (error) {
+         throw new ApiError(`Falha ao buscar logs para entidade ${entidade}`);
+       }
+     };
+
+     // Buscar logs por funcionário
+     export const getLogsByEmployee = async (id_funcionario: string): Promise<Log[]> => {
+       try {
+         const response = await api.get(`/log/funcionario/${id_funcionario}`); // Alterado de /logs para /log
+         return response.data;
+       } catch (error) {
+         throw new ApiError(`Falha ao buscar logs para funcionário com id ${id_funcionario}`);
+       }
+     };

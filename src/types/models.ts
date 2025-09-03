@@ -459,3 +459,53 @@ export interface Estabelecimento {
   createdAt?: string;
   updatedAt?: string;
 }
+export enum AcaoLog {
+  CREATE = "CREATE",
+  UPDATE = "UPDATE",
+  DELETE = "DELETE",
+  VIEW = "VIEW",
+}
+
+export type EntidadeLog =
+  | "clientes"
+  | "estabelecimentos"
+  | "funcoes"
+  | "permissoes"
+  | "funcoesPermissoes"
+  | "funcionarios"
+  | "logs"
+  | "tarefas"
+  | "funcionariosTarefas"
+  | "categoriasProdutos"
+  | "produtos"
+  | "estoques"
+  | "fornecedores"
+  | "codigoRecuperacao"
+  | "entradasEstoque"
+  | "caixas"
+  | "vendas"
+  | "vendasProdutos"
+  | "seccoes"
+  | "corredores"
+  | "prateleiras"
+  | "localizacoes"
+  | "produtosLocalizacoes"
+  | "transferencias"
+  | "funcionariosCaixa"
+  | "alertas"
+  | string; // Para casos de "unknown" ou entidades não mapeadas
+
+export interface Log {
+  id?: string;
+  id_funcionario?: string | null;
+  entidade: EntidadeLog;
+  acao: AcaoLog;
+  dadosAnteriores?: any; // Dados antes da alteração (sanitizados)
+  dadosNovos?: any; // Dados após a alteração (sanitizados)
+  diferencas?: any; // Diferenças calculadas entre dadosAnteriores e dadosNovos
+  ip?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+  funcionarios?: Funcionario; // Relacionamento opcional com Funcionario
+  estabelecimentos?: Estabelecimento; // Relacionamento opcional com Estabelecimento
+}
